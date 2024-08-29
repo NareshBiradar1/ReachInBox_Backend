@@ -10,10 +10,20 @@ const generateResponseWorker = new Worker('newEmails-queue', async (job) => {
   console.log(`Worker 2 processing job ${job.id}`);
   const aiResponse  = await generateResponse(job.data);
 
-  aiResponse.then((response) => {
-    console.log('AI response:', response);
-  });
+  // aiResponse.then((response) => {
+  //   console.log('AI response:', response);
+  // });
 
+  if(aiResponse==null){
+    console.log('AI response:', 'No response');
+  }
+  else{
+    console.log('AI response:', aiResponse);
+  }
+
+  
+
+  
 }, { 
   connection ,
   concurrency: 1,
