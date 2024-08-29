@@ -2,7 +2,6 @@ const {google} = require('googleapis');
 const { OAuth2Client } = require('google-auth-library');
 const userAccountController = require('./userAccountController');
 const { connectDB } = require('../Database/connectDB');
-const { processRecentThreads } = require('./test');
 
 // This function creates and returns an authenticated OAuth2Client
 async function createAuthClient(refreshToken , accessToken) {
@@ -59,41 +58,43 @@ async function manageNewEmail(userData){
         return res.status(400).send('Error processing notification');
     }    
 }
-async function getLatestUnreadMessage(oauth2Client) {
-    try {
-        const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+/*
+// async function getLatestUnreadMessage(oauth2Client) {
+//     try {
+        // const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
         
-        // Fetch the list of unread messages
-        const response = await gmail.users.messages.list({
-            userId: 'me',
-            q: 'is:unread', // Query to filter unread messages
-            maxResults: 1, // Only need the latest one
-        });
+//         // Fetch the list of unread messages
+//         const response = await gmail.users.messages.list({
+//             userId: 'me',
+//             q: 'is:unread', // Query to filter unread messages
+//             maxResults: 1, // Only need the latest one
+//         });
         
-        const messages = response.data.messages;
+        // const messages = response.data.messages;
 
-        if (messages && messages.length > 0) {
-            const messageId = messages[0].id;
+        // if (messages && messages.length > 0) {
+        //     const messageId = messages[0].id;
             
-            // Fetch the message details
-            const messageResponse = await gmail.users.messages.get({
-                userId: 'me',
-                id: messageId,
-                format: 'full', // Use 'full' to get all details
-            });
+        //     // Fetch the message details
+        //     const messageResponse = await gmail.users.messages.get({
+        //         userId: 'me',
+        //         id: messageId,
+        //         format: 'full', // Use 'full' to get all details
+        //     });
 
-            const message = messageResponse.data;
-            console.log('Latest unread message:', message);
-            return message;
-        } else {
-            console.log('No unread messages found.');
-            return null;
-        }
-    } catch (error) {
-        console.error('Error fetching unread messages:', error);
-        throw error;
-    }
-}
+        //     const message = messageResponse.data;
+//             console.log('Latest unread message:', message);
+//             return message;
+//         } else {
+//             console.log('No unread messages found.');
+//             return null;
+//         }
+//     } catch (error) {
+//         console.error('Error fetching unread messages:', error);
+//         throw error;
+//     }
+// }
+*/
 async function retrieveThreadFromMessage(auth, messageId) {
     try {
         const gmail = google.gmail({ version: 'v1', auth });

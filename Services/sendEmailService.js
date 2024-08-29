@@ -65,13 +65,58 @@ async function sendEmailService({emailData, originalMessageData}) {
         threadId: threadId,
       },
     });
-    console.log('Reply sent successfully:', res.data);
-    return res.data;
+    // label , gmail , res
+   
+    const finalRes = await addLabelToEmail({
+      labelName:emailData.label , 
+      gmail , 
+      res
+    });
+    console.log('Reply sent successfully:', finalRes);
+    return finalRes;
   } catch (error) {
     console.error('Error sending reply:', error);
     throw error;
   }
 
+}
+
+async function addLabelToEmail({labelName , gmail , res}) {
+  const labelRes = await gmail.users.labels.list({ userId: 'me' });
+  const label = labelRes.data.labels.find(l => l.name === labelName);
+
+  if (label) {
+    await gmail.users.messages.modify({
+      userId: 'me',
+      id: res.data.id,
+      requestBody: {
+        addLabelIds: [label.id],
+      },
+    });
+    console.log(`Label "${labelName}" applied to the message.`);
+  } else {
+    console.warn(`Label "${labelName}" not found. Creating new label.`);
+    const newLabel = await gmail.users.labels.create({
+      userId: 'me',
+      requestBody: {
+        name: labelName,
+        labelListVisibility: 'labelShow',
+        messageListVisibility: 'show',
+      },
+    });
+    await gmail.users.messages.modify({
+      userId: 'me',
+      id: res.data.id,
+      requestBody: {
+        addLabelIds: [newLabel.data.id],
+          },
+        });
+        console.log(`New label "${labelName}" created and applied to the message.`);
+      }
+    
+
+    return res.data;
+   
 }
 
 module.exports = {

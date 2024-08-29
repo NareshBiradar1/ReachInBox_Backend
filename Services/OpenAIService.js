@@ -76,7 +76,7 @@ const generateResponse = async (thread) => {
     try {
         const formattedThread = formattedEmailThread(thread);
         const response = await openAIClient.chat.completions.create({
-            model: "gpt-4-turbo",
+            model: "gpt-4o",
             messages: formattedThread,
         })
         // Extract and return the generated message from the response
@@ -87,10 +87,10 @@ const generateResponse = async (thread) => {
 
         return {
             from : fromEmail,
-            body: response.choices[0].message.content
-           
-            
+            body: response.choices[0].message.content  ,
+            label : "Interested"
         };
+
     } catch (err) {
         throw err;
     }
