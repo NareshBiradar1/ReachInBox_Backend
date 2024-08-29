@@ -1,22 +1,30 @@
 const { Worker } = require('bullmq');
 const Redis = require('ioredis');
 const { connection } = require('./bullmq-config');
-
-
-const redisClient = new Redis();
+const {connectDB} = require('../Database/connectDB');
+const { generateResponse } = require('../Services/OpenAIService');
+// const redisClient = new Redis();
  
-const worker = new Worker('queue1', async (job) => {
+const generateResponseWorker = new Worker('newEmails-queue', async (job) => {
+  connectDB();
   console.log(`Worker 2 processing job ${job.id}`);
-  // 
+  const aiResponse  = await generateResponse(job.data);
+
+  aiResponse.then((response) => {
+    console.log('AI response:', response);
+  });
+
 }, { 
   connection ,
-  concurrency: 10,
+  concurrency: 1,
 });
 
-worker.on('completed', job => {
+generateResponseWorker.on('completed', job => {
   console.log(`Worker 2 job ${job.id} completed`);
 });
 
-worker.on('failed', (job, err) => {
+generateResponseWorker.on('failed', (job, err) => {
   console.error(`Worker 3 job ${job.id} failed with error ${err.message}`);
 });
+
+module.exports = {generateResponseWorker};

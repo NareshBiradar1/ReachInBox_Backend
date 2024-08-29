@@ -9,15 +9,16 @@ const {connectDB} = require('../Database/connectDB');
 
 const getEmailWorker = new Worker('email-queue', async (job) => {
   connectDB();
-  console.log(`Worker 1 processing job ${job.id}`);
+  // console.log(`Worker 1 processing job ${job.id}`);
 
   const emailData = await manageNewEmail(job.data);
-  console.log("got email data ");
+  // console.log("got email data ");
 
-  const response = await addJob2(emailData);
+  const response 
+  = await addJob2(emailData);
   return response;
   
-}, { 
+}, {
     connection ,
     concurrency: 1,
 });

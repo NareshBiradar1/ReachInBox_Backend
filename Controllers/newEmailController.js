@@ -135,9 +135,10 @@ async function retrieveThreadFromMessage(auth, messageId) {
         // console.log(JSON.stringify(thread.data));
         // return thread.data;
         const messageDetails2 = extractMessageDetails(thread.data);
+        await removeUnreadLabel(auth, latestMessageId);
         console.log('Extracted message details:', JSON.stringify(messageDetails2, null, 2));
     
-        return messageDetails2;
+        return JSON.stringify(messageDetails2, null, 2);
         
       } catch (error) {
         console.error('Error retrieving latest unread thread:', error.message);
@@ -148,6 +149,23 @@ async function retrieveThreadFromMessage(auth, messageId) {
       }
     }
 
+    async function removeUnreadLabel(auth, messageId) {
+      const gmail = google.gmail({ version: 'v1', auth });
+      
+      try {
+        await gmail.users.messages.modify({
+          userId: 'me',
+          id: messageId,
+          requestBody: {
+            removeLabelIds: ['UNREAD']
+          }
+        });
+        console.log(`UNREAD label removed from message ${messageId}`);
+      } catch (error) {
+        console.error(`Error removing UNREAD label from message ${messageId}:`, error);
+        throw error;
+      }
+    }
     function extractMessageDetails(threadData) {
         const thread = typeof threadData === 'string' ? JSON.parse(threadData) : threadData;
         
