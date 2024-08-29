@@ -116,7 +116,7 @@ async function retrieveThreadFromMessage(auth, messageId) {
     
         // Step 2: Get the thread ID of the latest unread message
         console.log('Fetching message details to get thread ID...');
-        const messageDetails = await gmail.users.messages.get({
+        const messageDetails =  await gmail.users.messages.get({
           userId: 'me',
           id: latestMessageId,
         });
@@ -138,7 +138,11 @@ async function retrieveThreadFromMessage(auth, messageId) {
         await removeUnreadLabel(auth, latestMessageId);
         console.log('Extracted message details:', JSON.stringify(messageDetails2, null, 2));
     
-        return JSON.stringify(messageDetails2, null, 2);
+        let finalMessage = {
+          thread : JSON.stringify(messageDetails2, null, 2),
+          originalMessage : messageDetails
+        };
+        return finalMessage;
         
       } catch (error) {
         console.error('Error retrieving latest unread thread:', error.message);

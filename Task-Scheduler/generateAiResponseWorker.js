@@ -3,22 +3,31 @@ const Redis = require('ioredis');
 const { connection } = require('./bullmq-config');
 const {connectDB} = require('../Database/connectDB');
 const { generateResponse } = require('../Services/OpenAIService');
+const {addJob3} = require('./producer');
+
 // const redisClient = new Redis();
  
 const generateResponseWorker = new Worker('newEmails-queue', async (job) => {
   connectDB();
-  console.log(`Worker 2 processing job ${job.id}`);
-  const aiResponse  = await generateResponse(job.data);
+  // console.log(`Worker 2 processing job ${job.id}`);
+  // console.log(job.data);
+  const emailData  = await generateResponse(job.data.thread);
 
-  // aiResponse.then((response) => {
-  //   console.log('AI response:', response);
-  // });
+
 
   if(aiResponse==null){
     console.log('AI response:', 'No response');
   }
   else{
-    console.log('AI response:', aiResponse);
+    
+    const finalResponse = {
+      emailData : emailData,
+      originalMessageData : job.data.originalMessage
+    }
+
+    const response 
+    = await addJob3(finalResponse);
+    return response;
   }
 
   
@@ -34,7 +43,7 @@ generateResponseWorker.on('completed', job => {
 });
 
 generateResponseWorker.on('failed', (job, err) => {
-  console.error(`Worker 3 job ${job.id} failed with error ${err.message}`);
+  console.error(`Worker 2 job ${job.id} failed with error ${err.message}`);
 });
 
 module.exports = {generateResponseWorker};

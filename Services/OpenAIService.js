@@ -46,13 +46,13 @@ Sample 1:
 
 Sample 2:
     User: "Sir, I had a I had a query. The design for the assignment has been provided as a figma file, but can't I have my own designs, or
-    we have to stick to the provided figma design?\nThanks & Regards\nAbhishek"
-    Assistant: "Hi Abhishek,\nYou have to stick to the Figma design so that we can see how well you can replicate any design.\nBest,\nIshant",
-    User: "Understood.\nHowever, can I add additional features to it , besides the required functionalities?\nAlso, is there any way we can submit a demonstration video for the same?\nThanks\nAbhishek"
+    we have to stick to the provided figma design?\nThanks & Regards\nNaresh Biradar"
+    Assistant: "Hi Naresh Biradar,\nYou have to stick to the Figma design so that we can see how well you can replicate any design.\nBest,\nIshant",
+    User: "Understood.\nHowever, can I add additional features to it , besides the required functionalities?\nAlso, is there any way we can submit a demonstration video for the same?\nThanks\nNaresh Biradar"
     Assistant: "Sure. If you want to add something more than what's in the assignment, it is upto you.\nYou can add the demo video in the github repo's README file."
 `;
 
-// Format the thread of messages and generate a response
+// Format the thread of messages and generate a response using OpenAI's API
 const formattedEmailThread = (thread) => {
     if(thread==null){
         return null;
@@ -83,11 +83,17 @@ const generateResponse = async (thread) => {
         console.log("successfully geenrated response");
         console.log(typeof response.choices[0].message.content);
 
-        return response.choices[0].message.content;
+        return {
+            from : thread[thread.length-1]["to"],
+            body: response.choices[0].message.content
+           
+            
+        };
     } catch (err) {
         throw err;
     }
 }
+
 module.exports = {
     generateResponse,
 }
