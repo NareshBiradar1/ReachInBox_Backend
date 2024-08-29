@@ -1,8 +1,9 @@
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-const {getRefreshTokenByEmail} = require('../Controllers/userAccountController');
+const userAccountControllers = require('../Controllers/userAccountController');
 const { google } = require('googleapis');
+const { type } = require('os');
 
 async function sendEmailService({emailData, originalMessageData}) {
     const oauth2Client = new google.auth.OAuth2(
@@ -11,21 +12,37 @@ async function sendEmailService({emailData, originalMessageData}) {
         process.env.GMAIL_REDIRECT_URI
       );
 
-      const refreshToken = await getRefreshTokenByEmail(emailData.from);
-
-      oauth2Client.setCredentials({refresh_token: refreshToken});
-
-      const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
-
-      try {
-        const messageId = originalMessageData.data.id;
+      const messageId = originalMessageData.data.id;
         const threadId = originalMessageData.data.threadId;
         const headers = originalMessageData.data.payload.headers;
         const subject = headers.find(h => h.name.toLowerCase() === 'subject').value;
         const to = headers.find(h => h.name.toLowerCase() === 'from').value;
+        const fromEmail = emailData.from;
+
+
+      console.log("email data in service ", fromEmail);
+      console.log("type of " , typeof(fromEmail));
+
+      const refreshToken = await userAccountControllers.getRefreshTokenByEmail(fromEmail);
+
+      console.log("refresh i main ", refreshToken);
+
+      const accessToken = await userAccountControllers.getAccessToken(fromEmail);
+
+      oauth2Client.setCredentials({
+        access_token: accessToken,
+        refresh_token: refreshToken
+    });
+        console.log("set credentials suucessfully");
+
+      const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+
+      try {
+        
+
     
         const message = [
-          `From: ${emailData.from}`,
+          `From: ${fromEmail}`,
           `To: ${to}`,
           `Subject: Re: ${subject}`,
           `In-Reply-To: <${messageId}@mail.gmail.com>`,

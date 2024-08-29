@@ -139,7 +139,7 @@ async function retrieveThreadFromMessage(auth, messageId) {
         console.log('Extracted message details:', JSON.stringify(messageDetails2, null, 2));
     
         let finalMessage = {
-          thread : JSON.stringify(messageDetails2, null, 2),
+          thread : messageDetails2,
           originalMessage : messageDetails
         };
         return finalMessage;

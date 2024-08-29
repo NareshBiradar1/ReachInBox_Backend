@@ -15,7 +15,7 @@ const generateResponseWorker = new Worker('newEmails-queue', async (job) => {
 
 
 
-  if(aiResponse==null){
+  if(emailData==null){
     console.log('AI response:', 'No response');
   }
   else{

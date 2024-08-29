@@ -83,8 +83,10 @@ const generateResponse = async (thread) => {
         console.log("successfully geenrated response");
         console.log(typeof response.choices[0].message.content);
 
+        const fromEmail = retrieveEmailFromString(thread[thread.length-1]["to"]);
+
         return {
-            from : thread[thread.length-1]["to"],
+            from : fromEmail,
             body: response.choices[0].message.content
            
             
@@ -92,6 +94,16 @@ const generateResponse = async (thread) => {
     } catch (err) {
         throw err;
     }
+}
+
+function retrieveEmailFromString(emailString) {
+    const arr = emailString.split(' ');
+    const lastElementValue = arr[arr.length - 1];
+
+    if (lastElementValue.includes('<') && lastElementValue.includes('>')) {
+        return lastElementValue.substring(lastElementValue.indexOf('<') + 1, lastElementValue.indexOf('>')).trim();
+    }
+    else return lastElementValue.trim();
 }
 
 module.exports = {

@@ -1,5 +1,6 @@
 const userAccountModel = require('../Models/UserAccountModel');
 const {connectDB} = require('../Database/connectDB');
+const e = require('express');
 
 require('dotenv').config();
 
@@ -28,8 +29,10 @@ exports.saveUserToDb = async (userAccountDetails) => {
 exports.getRefreshTokenByEmail = async (email) => {
     try {
         await connectDB();
+        console.log("got request for refresh token with emil = ",email);
         const userAccount = await userAccountModel.findOne({accountEmail: email});
         // console.log('userAccount:', userAccount);
+        // console.log("userAccount = ",userAccount.refreshToken);
         return userAccount.refreshToken;
     }
     catch (err) {
