@@ -3,32 +3,32 @@ const Redis = require('ioredis');
 const { manageNewEmail } = require('../Controllers/newEmailController');
 const {addJob2} = require('./producer');
 const { connection } = require('./bullmq-config');
-
+const {connectDB} = require('../Database/connectDB');
 
 // const redisClient = new Redis(); 
 
-const sendEmailWorker = new Worker('email-queue', async (job) => {
+const getEmailWorker = new Worker('email-queue', async (job) => {
+  connectDB();
   console.log(`Worker 1 processing job ${job.id}`);
-  // generate thread and save in opeaai queue
 
   const emailData = await manageNewEmail(job.data);
-  console.log("got email data " , emailData);
+  console.log("got email data ");
 
   const response = await addJob2(emailData);
   return response;
   
 }, { 
     connection ,
-    concurrency: 10,
+    concurrency: 1,
 });
 
-sendEmailWorker.on('completed', job => {
+getEmailWorker.on('completed', job => {
   console.log(`Worker 1 job ${job.id} completed`);
 });
 
-sendEmailWorker.on('failed', (job, err) => {
+getEmailWorker.on('failed', (job, err) => {
   console.error(`Worker 1 job ${job.id} failed with error ${err.message}`);
 });
 
-module.exports = {sendEmailWorker};
+module.exports = {getEmailWorker};
 

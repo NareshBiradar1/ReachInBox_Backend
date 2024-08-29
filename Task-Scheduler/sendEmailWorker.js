@@ -3,7 +3,7 @@ const Redis = require('ioredis');
 const { connection } = require('./bullmq-config');
 
 
-const redisClient = new Redis(); 
+// const redisClient = new Redis(); 
 
 const worker = new Worker('openaiResponse-queue', async (job) => {
   // Your task processing logic here

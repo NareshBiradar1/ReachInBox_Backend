@@ -5,7 +5,6 @@ require('dotenv').config();
 
 exports.saveUserToDb = async (userAccountDetails) => {
     try {
-        await connectDB();
         let accountType = 'OUTLOOK';
         if (userAccountDetails.iss === 'https://accounts.google.com') {
             accountType = 'GMAIL';
@@ -30,6 +29,7 @@ exports.getRefreshTokenByEmail = async (email) => {
     try {
         await connectDB();
         const userAccount = await userAccountModel.findOne({accountEmail: email});
+        // console.log('userAccount:', userAccount);
         return userAccount.refreshToken;
     }
     catch (err) {
@@ -42,6 +42,7 @@ exports.getAccessToken = async(email)=>{
     try {
         await connectDB();
         const userAccount = await userAccountModel.findOne({accountEmail: email});
+        // console.log('userAccount:', userAccount);
         let accessToken = userAccount.accessToken;
         let expiresAt = userAccount.expiresAt;
 

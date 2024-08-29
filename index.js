@@ -19,8 +19,12 @@ const gmailnewEmailManage = require('./Routes/gmailnewEmailManage');
 app.use(express.json());
 // Connect to MongoDB Database
 
+async function connectDataBase(){
+    await connectDB();
+}
+connectDataBase();
 
-connectDB();
+
 
 app.use('/users', userRoutes);
 app.use('/users/accounts', userAccountRoutes);

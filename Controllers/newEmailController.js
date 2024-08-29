@@ -34,6 +34,7 @@ async function manageNewEmail(userData){
             const decodedData = JSON.parse(Buffer.from(message.message.data, 'base64').toString());
 
             const email = decodedData.emailAddress;
+            
             const refreshToken = await userAccountController.getRefreshTokenByEmail(email);
 
             const messageId = message.message.messageId;
@@ -41,14 +42,13 @@ async function manageNewEmail(userData){
 
             
             // await processNewEmail(decodedData.emailAddress, messageId, refreshToken);
-            // let authClient = await createAuthClient(refreshToken , accessToken);
-            // let allMessages = await retrieveThreadFromMessage(authClient , messageId);
-            // return allMessages;
+            let authClient = await createAuthClient(refreshToken , accessToken);
+            let allMessages = await retrieveThreadFromMessage(authClient , messageId);
+            return allMessages;
             // let unreadMeassge = await  getLatestUnreadMessage(authClient);
             // return unreadMeassge;
 
             // let processedThreads = await processRecentThreads(accessToken);
-            return "email processing done and got new mail";
         } else {
             console.log('Unexpected message format:', message);
         }

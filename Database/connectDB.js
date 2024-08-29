@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const path = require('path');
+require('dotenv').config({path: path.join(__dirname, '../.env')});
 
 let isConnected = false;
 
@@ -9,16 +11,15 @@ const connectDB = async () => {
     }
 
     try {
-
         mongoose.connect(process.env.MONGO_URL)
-            .then(() => {
-                console.log("Connected to MongoDB");
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-
-        isConnected = true;
+        .then(() => {
+            isConnected = true;
+            console.log('Database connected');
+        })
+        .catch((err) => {
+            console.log('Error connecting to database:', err);
+        })
+        
     } catch (error) {
         console.error('Error connecting to MongoDB:', error);
         process.exit(1);

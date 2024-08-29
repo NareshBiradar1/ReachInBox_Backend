@@ -20,7 +20,7 @@ const openaiResponseQueue = new Queue('openaiResponse-queue', { connection });
 // const openaiResponseScheduler = new QueueScheduler('openaiResponse-queue', { connection });
 
 module.exports = { 
- emailQueue, 
+  emailQueue, 
    newEmailsQueue, 
    openaiResponseQueue,
   
