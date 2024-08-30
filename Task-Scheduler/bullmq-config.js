@@ -3,10 +3,17 @@ const Redis = require('ioredis');
 
 // Create a Redis connection
 const connection = new Redis({
-  host: 'localhost', // or your Redis host
+  host: '127.0.0.1', // or your Redis host
   port: 6379, // default Redis port
   maxRetriesPerRequest: null,
   enableReadyCheck: false,
+});
+connection.on('connect', () => {
+  console.log('Connected to Redis');
+});
+
+connection.on('error', (err) => {
+  console.error('Redis connection error:', err);
 });
 
 // Define queues
