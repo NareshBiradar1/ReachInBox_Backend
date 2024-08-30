@@ -129,3 +129,16 @@ let updateExpiresAtByEmail = async (email, newExpiresAt) => {
         throw new Error(`Failed to update expiresAt for email ${email}. Please try again later.`);
     }
 }
+
+exports.deleteUserAccountByEmail = async (email) => {
+    try {
+        const deletedUserAccount = await userAccountModel.findOneAndDelete({accountEmail: email});
+        if (deletedUserAccount) return deletedUserAccount;
+        else {
+            throw new Error(`No user found with email: ${email}`);
+        }
+    } catch (err) {
+        console.error('Error deleting user account:', err);
+        throw err;
+    }
+}

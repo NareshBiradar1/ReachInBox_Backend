@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const app = express();
 const gmailAuthRoutes = require('./Routes/gmailAuthRoutes');
 
-const sendEmailWorker = require('./Task-Scheduler/sendEmailWorker');
+// const sendEmailWorker = require('./Task-Scheduler/sendEmailWorker');
 
 const {connectDB} = require('./Database/connectDB');
 require('dotenv').config();
@@ -14,6 +14,10 @@ const userRoutes = require('./Routes/UserRoutes');
 const userAccountRoutes = require('./Routes/UserAccountRoutes');
 const gmailnewEmailManage = require('./Routes/gmailnewEmailManage');
 
+
+const {getEmailWorker} = require('./Task-Scheduler/getEmailWorker');
+const {generateResponseWorker} = require('./Task-Scheduler/generateAiResponseWorker');
+const {sendEmailWorker} = require('./Task-Scheduler/sendEmailWorker');
 
 
 app.use(express.json());
