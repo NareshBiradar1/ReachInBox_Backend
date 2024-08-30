@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const gmailAuthRoutes = require('./Routes/gmailAuthRoutes');
+const gmailWatchRoute = require('./Routes/gmailWatchRoute');
 
 // const sendEmailWorker = require('./Task-Scheduler/sendEmailWorker');
 
@@ -34,6 +35,7 @@ app.use('/users', userRoutes);
 app.use('/users/accounts', userAccountRoutes);
 app.use('/', gmailAuthRoutes);
 app.use('/', gmailnewEmailManage);
+app.use('/gmail' , gmailWatchRoute);
 
 app.get('/', (req, res) => {
     res.send("Authorization completed succesfully");

@@ -43,9 +43,7 @@ await stopGmailWatch(authClient);
 console.log("Gmail watch stopped successfully for user ", email);
 
 }
-for(i=1;i<100;i++){
-  stopWatchForUser("nareshdb555@gmail.com");
-}
+
 
 module.exports = {
     stopWatchForUser
