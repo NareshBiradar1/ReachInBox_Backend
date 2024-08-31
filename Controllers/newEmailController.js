@@ -33,7 +33,20 @@ async function manageNewEmail(userData){
             const decodedData = JSON.parse(Buffer.from(message.message.data, 'base64').toString());
 
             const email = decodedData.emailAddress;
+
+            console.log('userData' , decodedData);
+            console.log('userData', decodedData.historyId);
+            console.log('type ' , typeof decodedData.historyId);
             
+            const newHistoryId = decodedData.historyId;
+            const latestProcessedHistoryId = await userAccountController.getHistoryIdByEmail(email);
+
+            if(newHistoryId <= latestProcessedHistoryId){
+              return "No new email to process";
+            }
+            
+            await userAccountController.updateHistoryIdByEmail(email , newHistoryId);
+
             const refreshToken = await userAccountController.getRefreshTokenByEmail(email);
 
             const messageId = message.message.messageId;

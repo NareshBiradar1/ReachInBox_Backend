@@ -61,6 +61,29 @@ exports.getAccessToken = async(email)=>{
 
 }
 
+exports.getHistoryIdByEmail = async (email) => {
+    try {
+        const fetchedUserAccount = await userAccountModel.findOne({accountEmail: email});
+        if (!fetchedUserAccount) {
+            throw new Error(`No user found with email: ${email}`);
+        }
+        return fetchedUserAccount.historyId;
+    } catch (err) {
+        console.log('Error retrieving historyId:', err);
+        throw err;
+    }
+}
+
+// Update history id by email
+exports.updateHistoryIdByEmail = async (email, newHistoryId) => {
+    try {
+        const updatedUserAccount = await userAccountModel.findOneAndUpdate()
+    } catch (err) {
+        console.log('Error updating historyId:', err);
+        throw err;
+    }
+}
+
 async function generateNewAccessToken(email , refreshToken){
     const url = 'https://oauth2.googleapis.com/token';
   
