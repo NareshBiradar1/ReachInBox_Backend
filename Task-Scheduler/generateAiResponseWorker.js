@@ -39,7 +39,7 @@ const generateResponseWorker = new Worker('newEmails-queue', async (job) => {
 });
 
 generateResponseWorker.on('completed', job => {
-  console.log(`Worker 2 job ${job.id} completed`);
+  // console.log(`Worker 2 job ${job.id} completed`);
 });
 
 generateResponseWorker.on('failed', (job, err) => {

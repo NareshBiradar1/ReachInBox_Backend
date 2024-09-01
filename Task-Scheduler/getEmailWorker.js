@@ -13,7 +13,7 @@ const getEmailWorker = new Worker('email-queue', async (job) => {
 
   const emailData = await manageNewEmail(job.data);
 
-  if(emailData === "No new email to process"){
+  if(emailData === "No new email to process" || emailData==null){
     return "No new email to process";
   } else{
     const response = await addJob2(emailData);
@@ -29,7 +29,7 @@ const getEmailWorker = new Worker('email-queue', async (job) => {
 });
 
 getEmailWorker.on('completed', job => {
-  console.log(`Worker 1 job ${job.id} completed`);
+  // console.log(`Worker 1 job ${job.id} completed`);
 });
 
 getEmailWorker.on('failed', (job, err) => {

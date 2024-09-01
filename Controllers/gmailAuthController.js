@@ -81,6 +81,8 @@ async function setupGmailWatch(auth) {
             requestBody: {
                 topicName: `projects/${process.env.PROJECT_ID}/topics/${process.env.TOPIC_NAME}`,
                 labelIds: ['INBOX'],
+                labelFilterBehavior: 'INCLUDE',
+                historyTypes: ['messageAdded'],
             },
         });
 

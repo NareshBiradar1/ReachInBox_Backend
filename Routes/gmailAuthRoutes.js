@@ -28,8 +28,8 @@ router.get('/authenticated', async (req,res)=>{
     const { code , state } = req.query;
     const userId = state;
 
-    console.log("Code received from Google", code);
-    console.log("User ID received from Google", state);
+    console.log("Code received from Google");
+    console.log("User ID received from Google");
 
     if (!code) {
         return res.status(400).json({

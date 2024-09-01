@@ -18,6 +18,60 @@ async function createAuthClient(refreshToken , accessToken) {
     return oauth2Client;
 }
 
+async function getHistoryChanges(auth, startHistoryId) {
+  const gmail = google.gmail({ version: 'v1', auth });
+  
+  try {
+    const response = await gmail.users.history.list({
+      userId: 'me',
+      startHistoryId: startHistoryId,
+      historyTypes: ['messageAdded', 'labelAdded', 'labelRemoved']
+    });
+
+    return response.data.history || [];
+  } catch (error) {
+    console.error('Error fetching history changes:', error);
+    throw error;
+  }
+}
+async function retrieveSpecificMessage(auth, messageId) {
+  const gmail = google.gmail({ version: 'v1', auth });
+  
+  try {
+      const response = await gmail.users.messages.get({
+          userId: 'me',
+          id: messageId,
+          format: 'full'
+      });
+
+      return response.data;
+  } catch (error) {
+      console.error(`Error retrieving message ${messageId}:`, error);
+      throw error;
+  }
+}
+async function processInboxMessage(messageData, labels) {
+  console.log(`Processing INBOX message: ${messageData.id}`);
+  
+  // Extract relevant information from messageData
+  const subject = messageData.payload.headers.find(header => header.name === 'Subject').value;
+  const from = messageData.payload.headers.find(header => header.name === 'From').value;
+
+  // Implement your message processing logic here
+  // For example, categorize the message, generate a response, etc.
+  if (labels.includes('CATEGORY_PERSONAL')) {
+      console.log(`Personal email from ${from}: ${subject}`);
+      // Handle personal email
+  } else if (labels.includes('CATEGORY_PROMOTIONS')) {
+      console.log(`Promotional email: ${subject}`);
+      // Handle promotional email
+  } else {
+      console.log(`Other email from ${from}: ${subject}`);
+      // Handle other types of email
+  }
+
+  // Add your AI processing and response sending logic here
+}
 async function manageNewEmail(userData){
     try {
         await connectDB();
@@ -28,22 +82,27 @@ async function manageNewEmail(userData){
         } else {
             message = JSON.parse(userData.toString());
         }
-        console.log(userData);
+        // console.log(userData);
         if (message.message && message.message.data) {
             const decodedData = JSON.parse(Buffer.from(message.message.data, 'base64').toString());
 
             const email = decodedData.emailAddress;
 
-            console.log('userData' , decodedData);
-            console.log('userData', decodedData.historyId);
-            console.log('type ' , typeof decodedData.historyId);
+            // console.log('userData' , decodedData);
+            // console.log('userData', decodedData.historyId);
+            // console.log('type ' , typeof decodedData.historyId);
             
             const newHistoryId = decodedData.historyId;
             const latestProcessedHistoryId = await userAccountController.getHistoryIdByEmail(email);
 
-            if(newHistoryId <= latestProcessedHistoryId){
+            // console.log('latestProcessedHistoryId' , latestProcessedHistoryId);
+            // console.log('newHistoryId' , newHistoryId);
+
+            if(latestProcessedHistoryId != null && newHistoryId <= latestProcessedHistoryId){
+                console.log("No new email to process");
               return "No new email to process";
             }
+            console.log("got greater history id")
             
             await userAccountController.updateHistoryIdByEmail(email , newHistoryId);
 
@@ -55,6 +114,39 @@ async function manageNewEmail(userData){
             
             // await processNewEmail(decodedData.emailAddress, messageId, refreshToken);
             let authClient = await createAuthClient(refreshToken , accessToken);
+
+            // let historyChanges = await getHistoryChanges(authClient , newHistoryId);
+            // console.log('historyChanges' , historyChanges);
+
+          // console.log('historyChanges sterted');
+          //   for (const change of historyChanges) {
+          //     if (change.messagesAdded) {
+          //         for (const addedMessage of change.messagesAdded) {
+          //           console.log('Processing addedMessage:', addedMessage);
+                    
+          //           const messageId = addedMessage.message.id;
+          //           const threadId = addedMessage.message.threadId;
+          //           const labels = addedMessage.message.labelIds;
+
+          //           // Skip processing for SENT messages
+          //           if (labels.includes('SENT')) {
+          //               console.log(`Skipping SENT message: ${messageId}`);
+          //               continue;
+          //           }
+
+          //           // Process only INBOX messages
+          //           if (labels.includes('INBOX')) {
+          //               let messageData = await retrieveSpecificMessage(authClient, messageId);
+          //               await processInboxMessage(messageData, labels);
+          //           }
+                      // let messageData = await retrieveSpecificMessage(authClient, messageId);
+                      // Process the new message (e.g., send to AI for response)
+                      // await processMessage(messageData);
+          //         }
+          //     }
+          // }
+
+          // console.log('historyChanges ended');
             let allMessages = await retrieveThreadFromMessage(authClient , messageId);
             return allMessages;
             // let unreadMeassge = await  getLatestUnreadMessage(authClient);
@@ -98,6 +190,8 @@ async function retrieveThreadFromMessage(auth, messageId) {
           userId: 'me',
           id: latestMessageId,
         });
+
+        // console.log('messageDetails' , messageDetails);
 
         const threadId = messageDetails.data.threadId;
         console.log(`Thread ID of the latest unread message: ${threadId}`);

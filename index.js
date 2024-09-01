@@ -3,11 +3,13 @@ const mongoose = require('mongoose');
 const app = express();
 const gmailAuthRoutes = require('./Routes/gmailAuthRoutes');
 const gmailWatchRoute = require('./Routes/gmailWatchRoute');
+const {listenForMessages} = require('./Routes/gmailnewEmailManage');
 
 // const sendEmailWorker = require('./Task-Scheduler/sendEmailWorker');
 
 const {connectDB} = require('./Database/connectDB');
 require('dotenv').config();
+
 const cors = require('cors');
 app.use(cors());
 
@@ -16,9 +18,9 @@ const userAccountRoutes = require('./Routes/UserAccountRoutes');
 const gmailnewEmailManage = require('./Routes/gmailnewEmailManage');
 
 
-const {getEmailWorker} = require('./Task-Scheduler/getEmailWorker');
-const {generateResponseWorker} = require('./Task-Scheduler/generateAiResponseWorker');
-const {sendEmailWorker} = require('./Task-Scheduler/sendEmailWorker');
+// const {getEmailWorker} = require('./Task-Scheduler/getEmailWorker');
+// const {generateResponseWorker} = require('./Task-Scheduler/generateAiResponseWorker');
+// const {sendEmailWorker} = require('./Task-Scheduler/sendEmailWorker');
 
 
 app.use(express.json());
@@ -44,6 +46,7 @@ app.get('/', (req, res) => {
 const port = 3000 || process.env.PORT;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
+    // listenForMessages();
 });
 
 // sendEmailWorker.run().then(() => {

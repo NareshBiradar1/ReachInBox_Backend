@@ -46,9 +46,11 @@ async function emptyQueues() {
 async function empty(){
   await emptyQueues();
 }
+
 // empty();
 
-module.exports = { 
+
+module.exports = {
   emailQueue, 
    newEmailsQueue, 
    openaiResponseQueue,

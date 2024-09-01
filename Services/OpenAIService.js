@@ -75,19 +75,20 @@ const formattedEmailThread = (thread) => {
 const generateResponse = async (thread) => {
     try {
         const formattedThread = formattedEmailThread(thread);
-        const response = await openAIClient.chat.completions.create({
-            model: "gpt-4o",
-            messages: formattedThread,
-        })
+        // const response = await openAIClient.chat.completions.create({
+        //     model: "gpt-4o",
+        //     messages: formattedThread,
+        // })
         // Extract and return the generated message from the response
         console.log("successfully geenrated response");
-        console.log(typeof response.choices[0].message.content);
+        // console.log(typeof response.choices[0].message.content);
 
         const fromEmail = retrieveEmailFromString(thread[thread.length-1]["to"]);
 
         return {
             from : fromEmail,
-            body: response.choices[0].message.content  ,
+            // body: response.choices[0].message.content  ,
+            body : "testing phase",
             label : "Interested"
         };
 

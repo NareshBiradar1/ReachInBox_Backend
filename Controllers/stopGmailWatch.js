@@ -44,6 +44,13 @@ console.log("Gmail watch stopped successfully for user ", email);
 
 }
 
+// // for(l b=0;b<1000;i++){
+
+// // }
+// for(let i=0;i<10;i++){
+// stopWatchForUser("biradar6438@gmail.com");
+// }
+
 
 module.exports = {
     stopWatchForUser

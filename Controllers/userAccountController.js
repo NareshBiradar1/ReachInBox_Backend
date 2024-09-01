@@ -16,6 +16,7 @@ exports.saveUserToDb = async (userAccountDetails) => {
             accountEmail: userAccountDetails.accountEmail,
             accessToken: userAccountDetails.accessToken,
             refreshToken: userAccountDetails.refreshToken,
+            historyId: new Number(0),
             expiresAt: userAccountDetails.expiresIn,
         });
 
@@ -77,7 +78,15 @@ exports.getHistoryIdByEmail = async (email) => {
 // Update history id by email
 exports.updateHistoryIdByEmail = async (email, newHistoryId) => {
     try {
-        const updatedUserAccount = await userAccountModel.findOneAndUpdate()
+        const updatedUserAccount = await userAccountModel.findOneAndUpdate(
+            {accountEmail: email}, 
+            {historyId: newHistoryId}, 
+            {new: true}
+        );
+        if (updatedUserAccount) return updatedUserAccount;
+        else {
+            throw new Error(`No user found with email: ${email}`);
+        }
     } catch (err) {
         console.log('Error updating historyId:', err);
         throw err;
@@ -94,6 +103,8 @@ async function generateNewAccessToken(email , refreshToken){
   params.append('grant_type', 'refresh_token');
 
   try {
+    console.log("data started");
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -107,6 +118,7 @@ async function generateNewAccessToken(email , refreshToken){
     }
 
     const data = await response.json();
+    console.log("data" , data);
     //save the new access token to the database
     await updateAccessTokenByEmail(email , data.access_token);
     await updateExpiresAtByEmail(email , Date.now() + (45*60*1000));
