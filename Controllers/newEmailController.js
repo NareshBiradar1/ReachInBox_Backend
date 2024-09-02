@@ -110,6 +110,11 @@ async function manageNewEmail(userData){
             
             let authClient = await createAuthClient(refreshToken , accessToken);
 
+            // console.log("histoty changes start");
+
+            // const historyChanges = await getHistoryChanges(authClient , newHistoryId);
+            // console.log("history changes " , JSON.stringify(historyChanges));
+            // console.log("history changes end");
             
 
             let allMessages = await retrieveThreadFromMessage(authClient , messageId);

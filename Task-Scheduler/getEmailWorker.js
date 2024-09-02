@@ -1,6 +1,6 @@
 const { Worker } = require('bullmq');
 const Redis = require('ioredis');
-const { manageNewEmail } = require('../Controllers/newEmailController');
+const { manageNewEmail } = require('../Controllers/newEmailController2');
 const {addJob2} = require('./producer');
 const { connection } = require('./bullmq-config');
 const {connectDB} = require('../Database/connectDB');
@@ -16,8 +16,13 @@ const getEmailWorker = new Worker('email-queue', async (job) => {
   if(emailData === "No new email to process" || emailData==null){
     return "No new email to process";
   } else{
-    const response = await addJob2(emailData);
-    return response;
+    
+    // const response = await addJob2(emailData);
+    // return response;
+    for (const data of emailData) {
+       await addJob2(data);
+    }
+    return;
     
   }
   // console.log("got email data ");

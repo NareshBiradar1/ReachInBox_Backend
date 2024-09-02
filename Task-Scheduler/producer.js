@@ -1,19 +1,39 @@
-const { emailQueue , newEmailsQueue , openaiResponseQueue} = require('./bullmq-config');
+const { emailQueue, newEmailsQueue, openaiResponseQueue } = require('./bullmq-config');
 
-async function addJob(jobData ) {
-  await emailQueue.add('task', jobData);
-  console.log('Job added to queue1:', jobData);
+async function addJob(jobData) {
+    await emailQueue.add(
+        'task', 
+        jobData, 
+        {
+            removeOnComplete: true, // Automatically remove job on completion
+            removeOnFail: true      // Automatically remove job on failure
+        }
+    );
+    console.log('Job added to queue1:');
 }
 
 async function addJob2(jobData) {
-    await newEmailsQueue.add('task', jobData);
-    console.log('Job added to queue2:', jobData);
+    await newEmailsQueue.add(
+        'task', 
+        jobData, 
+        {
+            removeOnComplete: true, // Automatically remove job on completion
+            removeOnFail: true      // Automatically remove job on failure
+        }
+    );
+    console.log('Job added to queue2:');
 }
 
 async function addJob3(jobData) {
-    await openaiResponseQueue.add('task', jobData);
-    console.log('Job added to queue3:', jobData);
+    await openaiResponseQueue.add(
+        'task', 
+        jobData, 
+        {
+            removeOnComplete: true, // Automatically remove job on completion
+            removeOnFail: true      // Automatically remove job on failure
+        }
+    );
+    console.log('Job added to queue3:');
 }
-module.exports = { addJob , addJob2 , addJob3};
 
-
+module.exports = { addJob, addJob2, addJob3 };

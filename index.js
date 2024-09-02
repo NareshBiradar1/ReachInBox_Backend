@@ -24,7 +24,6 @@ const gmailnewEmailManage = require('./Routes/gmailnewEmailManage');
 
 
 app.use(express.json());
-// Connect to MongoDB Database
 
 async function connectDataBase(){
     await connectDB();
@@ -46,12 +45,7 @@ app.get('/', (req, res) => {
 const port = 3000 || process.env.PORT;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-    // listenForMessages();
 });
 
-// sendEmailWorker.run().then(() => {
-//     console.log('Worker has started and is running.');
-//   }).catch(err => {
-//     console.error('Failed to start the worker:', err);
-//   });
+
   
