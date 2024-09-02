@@ -62,3 +62,4 @@ async function stopWatchForUser(email) {
     console.log("Gmail watch stopped successfully for user ", email);
     
     }
+

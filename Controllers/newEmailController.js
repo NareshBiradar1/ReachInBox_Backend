@@ -25,7 +25,7 @@ async function getHistoryChanges(auth, startHistoryId) {
     const response = await gmail.users.history.list({
       userId: 'me',
       startHistoryId: startHistoryId,
-      historyTypes: ['messageAdded', 'labelAdded', 'labelRemoved']
+      historyTypes: ['messageAdded']
     });
 
     return response.data.history || [];
@@ -53,7 +53,6 @@ async function retrieveSpecificMessage(auth, messageId) {
 async function processInboxMessage(messageData, labels) {
   console.log(`Processing INBOX message: ${messageData.id}`);
   
-  // Extract relevant information from messageData
   const subject = messageData.payload.headers.find(header => header.name === 'Subject').value;
   const from = messageData.payload.headers.find(header => header.name === 'From').value;
 
@@ -73,6 +72,8 @@ async function processInboxMessage(messageData, labels) {
   // Add your AI processing and response sending logic here
 }
 async function manageNewEmail(userData){
+
+    console.log("inside manage new email");
     try {
         await connectDB();
 
@@ -82,21 +83,16 @@ async function manageNewEmail(userData){
         } else {
             message = JSON.parse(userData.toString());
         }
-        // console.log(userData);
         if (message.message && message.message.data) {
             const decodedData = JSON.parse(Buffer.from(message.message.data, 'base64').toString());
 
             const email = decodedData.emailAddress;
-
-            // console.log('userData' , decodedData);
-            // console.log('userData', decodedData.historyId);
-            // console.log('type ' , typeof decodedData.historyId);
+            console.log("inside manage new email for email = " + email);
             
             const newHistoryId = decodedData.historyId;
             const latestProcessedHistoryId = await userAccountController.getHistoryIdByEmail(email);
 
-            // console.log('latestProcessedHistoryId' , latestProcessedHistoryId);
-            // console.log('newHistoryId' , newHistoryId);
+           
 
             if(latestProcessedHistoryId != null && newHistoryId <= latestProcessedHistoryId){
                 console.log("No new email to process");
@@ -112,47 +108,13 @@ async function manageNewEmail(userData){
             const accessToken = await userAccountController.getAccessToken(email);
 
             
-            // await processNewEmail(decodedData.emailAddress, messageId, refreshToken);
             let authClient = await createAuthClient(refreshToken , accessToken);
 
-            // let historyChanges = await getHistoryChanges(authClient , newHistoryId);
-            // console.log('historyChanges' , historyChanges);
+            
 
-          // console.log('historyChanges sterted');
-          //   for (const change of historyChanges) {
-          //     if (change.messagesAdded) {
-          //         for (const addedMessage of change.messagesAdded) {
-          //           console.log('Processing addedMessage:', addedMessage);
-                    
-          //           const messageId = addedMessage.message.id;
-          //           const threadId = addedMessage.message.threadId;
-          //           const labels = addedMessage.message.labelIds;
-
-          //           // Skip processing for SENT messages
-          //           if (labels.includes('SENT')) {
-          //               console.log(`Skipping SENT message: ${messageId}`);
-          //               continue;
-          //           }
-
-          //           // Process only INBOX messages
-          //           if (labels.includes('INBOX')) {
-          //               let messageData = await retrieveSpecificMessage(authClient, messageId);
-          //               await processInboxMessage(messageData, labels);
-          //           }
-                      // let messageData = await retrieveSpecificMessage(authClient, messageId);
-                      // Process the new message (e.g., send to AI for response)
-                      // await processMessage(messageData);
-          //         }
-          //     }
-          // }
-
-          // console.log('historyChanges ended');
             let allMessages = await retrieveThreadFromMessage(authClient , messageId);
             return allMessages;
-            // let unreadMeassge = await  getLatestUnreadMessage(authClient);
-            // return unreadMeassge;
-
-            // let processedThreads = await processRecentThreads(accessToken);
+            
         } else {
             console.log('Unexpected message format:', message);
         }
@@ -166,6 +128,8 @@ async function manageNewEmail(userData){
 
 async function retrieveThreadFromMessage(auth, messageId) {
     try {
+      console.log('notification got for message id ;- ' ,messageId);
+
         const gmail = google.gmail({ version: 'v1', auth });
     
         // Step 1: Get the latest unread message
