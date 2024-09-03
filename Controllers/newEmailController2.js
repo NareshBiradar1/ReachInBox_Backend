@@ -3,7 +3,6 @@ const { OAuth2Client } = require('google-auth-library');
 const userAccountController = require('./userAccountController');
 const { connectDB } = require('../Database/connectDB');
 
-// This function creates and returns an authenticated OAuth2Client
 async function createAuthClient(refreshToken, accessToken) {
     const oauth2Client = new google.auth.OAuth2(
         process.env.GOOGLE_CLIENT_ID,
@@ -21,7 +20,8 @@ async function createAuthClient(refreshToken, accessToken) {
 async function fetchnewEmails(historyChanges, lastProcessedId, auth , email) {
     const gmail = google.gmail({ version: 'v1', auth });
     const processedEmails = [];
-
+    console.log('History changes:', historyChanges.length);
+    
 
     const filteredChanges = [];
     for (let i = 0; i < historyChanges.length; i++) {
@@ -38,11 +38,9 @@ async function fetchnewEmails(historyChanges, lastProcessedId, auth , email) {
     console.log('Filtered changes:', filteredChanges.length);
 
     for (const change of filteredChanges) {
-        // Check if 'messagesAdded' exists and is an array
         if (Array.isArray(change.messagesAdded)) {
             for (const messageWrapper of change.messagesAdded) {
                 const message = messageWrapper.message;
-                // Check if labelIds contains both 'UNREAD' and 'INBOX'
                 if (
                     message.labelIds.includes('UNREAD') && 
                     message.labelIds.includes('INBOX') && 
@@ -92,7 +90,6 @@ async function getHistoryChanges(auth, startHistoryId, lastProcessedId , email) 
         console.log('History changes fetched successfully');
         const processesEmails = await fetchnewEmails(response.data.history || [], lastProcessedId, auth , email);
         return processesEmails;
-        // return response.data.history || [];
     } catch (error) {
         console.error('Error fetching history changes:', error);
         throw error;

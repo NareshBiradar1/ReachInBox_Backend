@@ -18,59 +18,9 @@ async function createAuthClient(refreshToken , accessToken) {
     return oauth2Client;
 }
 
-async function getHistoryChanges(auth, startHistoryId) {
-  const gmail = google.gmail({ version: 'v1', auth });
-  
-  try {
-    const response = await gmail.users.history.list({
-      userId: 'me',
-      startHistoryId: startHistoryId,
-      historyTypes: ['messageAdded']
-    });
 
-    return response.data.history || [];
-  } catch (error) {
-    console.error('Error fetching history changes:', error);
-    throw error;
-  }
-}
-async function retrieveSpecificMessage(auth, messageId) {
-  const gmail = google.gmail({ version: 'v1', auth });
-  
-  try {
-      const response = await gmail.users.messages.get({
-          userId: 'me',
-          id: messageId,
-          format: 'full'
-      });
 
-      return response.data;
-  } catch (error) {
-      console.error(`Error retrieving message ${messageId}:`, error);
-      throw error;
-  }
-}
-async function processInboxMessage(messageData, labels) {
-  console.log(`Processing INBOX message: ${messageData.id}`);
-  
-  const subject = messageData.payload.headers.find(header => header.name === 'Subject').value;
-  const from = messageData.payload.headers.find(header => header.name === 'From').value;
 
-  // Implement your message processing logic here
-  // For example, categorize the message, generate a response, etc.
-  if (labels.includes('CATEGORY_PERSONAL')) {
-      console.log(`Personal email from ${from}: ${subject}`);
-      // Handle personal email
-  } else if (labels.includes('CATEGORY_PROMOTIONS')) {
-      console.log(`Promotional email: ${subject}`);
-      // Handle promotional email
-  } else {
-      console.log(`Other email from ${from}: ${subject}`);
-      // Handle other types of email
-  }
-
-  // Add your AI processing and response sending logic here
-}
 async function manageNewEmail(userData){
 
     console.log("inside manage new email");
@@ -109,13 +59,6 @@ async function manageNewEmail(userData){
 
             
             let authClient = await createAuthClient(refreshToken , accessToken);
-
-            // console.log("histoty changes start");
-
-            // const historyChanges = await getHistoryChanges(authClient , newHistoryId);
-            // console.log("history changes " , JSON.stringify(historyChanges));
-            // console.log("history changes end");
-            
 
             let allMessages = await retrieveThreadFromMessage(authClient , messageId);
             return allMessages;
@@ -159,13 +102,9 @@ async function retrieveThreadFromMessage(auth, messageId) {
           userId: 'me',
           id: latestMessageId,
         });
-
-        // console.log('messageDetails' , messageDetails);
-
         const threadId = messageDetails.data.threadId;
         console.log(`Thread ID of the latest unread message: ${threadId}`);
     
-        // Step 3: Get the entire thread
         console.log('Fetching the entire thread...');
         const thread = await gmail.users.threads.get({
           userId: 'me',
@@ -173,8 +112,7 @@ async function retrieveThreadFromMessage(auth, messageId) {
         });
     
         console.log('Thread retrieved successfully');
-        // console.log(JSON.stringify(thread.data));
-        // return thread.data;
+        
         const messageDetails2 = extractMessageDetails(thread.data);
         await removeUnreadLabel(auth, latestMessageId);
         console.log('Extracted message details:', JSON.stringify(messageDetails2, null, 2));

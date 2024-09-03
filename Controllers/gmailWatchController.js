@@ -57,7 +57,7 @@ async function stopWatchForUser(email) {
     const authClient = await createAuthClient(refreshToken , accessToken);
     
     await stopGmailWatch(authClient);
-    // await userAccountController.deleteUserAccountByEmail(email);
+    
     
     console.log("Gmail watch stopped successfully for user ", email);
     
