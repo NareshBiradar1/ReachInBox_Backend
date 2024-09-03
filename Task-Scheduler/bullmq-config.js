@@ -1,10 +1,9 @@
 const { Queue, Worker, QueueScheduler } = require('bullmq');
 const Redis = require('ioredis');
 
-// Create a Redis connection
 const connection = new Redis({
-  host: '127.0.0.1', // or your Redis host
-  port: 6379, // default Redis port
+  host: '127.0.0.1', 
+  port: 6379, 
   maxRetriesPerRequest: null,
   enableReadyCheck: false,
 });
@@ -16,7 +15,6 @@ connection.on('error', (err) => {
   console.error('Redis connection error:', err);
 });
 
-// Define queues
 const emailQueue = new Queue('email-queue', { connection });
 const newEmailsQueue = new Queue('newEmails-queue', { connection });
 const openaiResponseQueue = new Queue('openaiResponse-queue', { connection });

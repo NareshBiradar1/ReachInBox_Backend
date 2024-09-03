@@ -15,7 +15,7 @@ const sendEmailWorker = new Worker('openaiResponse-queue', async (job) => {
 });
 
 sendEmailWorker.on('completed', job => {
-  // console.log(`Worker 3 job ${job.id} completed`);
+  console.log(`Worker 3 job ${job.id} completed`);
 });
 
 sendEmailWorker.on('failed', (job, err) => {

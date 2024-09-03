@@ -23,7 +23,6 @@ async function fetchnewEmails(historyChanges, lastProcessedId, auth , email) {
     const processedEmails = [];
 
 
-    // const filteredChanges = historyChanges.filter(change => change.id > lastProcessedId);
     const filteredChanges = [];
     for (let i = 0; i < historyChanges.length; i++) {
         const change = historyChanges[i];
@@ -44,7 +43,12 @@ async function fetchnewEmails(historyChanges, lastProcessedId, auth , email) {
             for (const messageWrapper of change.messagesAdded) {
                 const message = messageWrapper.message;
                 // Check if labelIds contains both 'UNREAD' and 'INBOX'
-                if (message.labelIds.includes('UNREAD') && message.labelIds.includes('INBOX')) {
+                if (
+                    message.labelIds.includes('UNREAD') && 
+                    message.labelIds.includes('INBOX') && 
+                    !message.labelIds.includes('CATEGORY_PROMOTIONS') && 
+                    !message.labelIds.includes('CATEGORY_UPDATES')
+                ) {
                     const latestMessageId = message.id;
                     const threadId = message.threadId;
                     const messageDetails = await gmail.users.messages.get({

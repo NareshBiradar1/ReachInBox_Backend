@@ -5,8 +5,8 @@ async function addJob(jobData) {
         'task', 
         jobData, 
         {
-            removeOnComplete: true, // Automatically remove job on completion
-            removeOnFail: true      // Automatically remove job on failure
+            removeOnComplete: true, 
+            removeOnFail: true      
         }
     );
     console.log('Job added to queue1:');
@@ -17,8 +17,8 @@ async function addJob2(jobData) {
         'task', 
         jobData, 
         {
-            removeOnComplete: true, // Automatically remove job on completion
-            removeOnFail: true      // Automatically remove job on failure
+            removeOnComplete: true, 
+            removeOnFail: true      
         }
     );
     console.log('Job added to queue2:');
@@ -29,8 +29,8 @@ async function addJob3(jobData) {
         'task', 
         jobData, 
         {
-            removeOnComplete: true, // Automatically remove job on completion
-            removeOnFail: true      // Automatically remove job on failure
+            removeOnComplete: true, 
+            removeOnFail: true     
         }
     );
     console.log('Job added to queue3:');
