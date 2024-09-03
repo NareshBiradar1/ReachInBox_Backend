@@ -94,43 +94,8 @@ async function getHistoryChanges(auth, startHistoryId, lastProcessedId , email) 
         throw error;
     }
 }
-async function retrieveSpecificMessage(auth, messageId) {
-    const gmail = google.gmail({ version: 'v1', auth });
 
-    try {
-        const response = await gmail.users.messages.get({
-            userId: 'me',
-            id: messageId,
-            format: 'full'
-        });
 
-        return response.data;
-    } catch (error) {
-        console.error(`Error retrieving message ${messageId}:`, error);
-        throw error;
-    }
-}
-async function processInboxMessage(messageData, labels) {
-    console.log(`Processing INBOX message: ${messageData.id}`);
-
-    const subject = messageData.payload.headers.find(header => header.name === 'Subject').value;
-    const from = messageData.payload.headers.find(header => header.name === 'From').value;
-
-    // Implement your message processing logic here
-    // For example, categorize the message, generate a response, etc.
-    if (labels.includes('CATEGORY_PERSONAL')) {
-        console.log(`Personal email from ${from}: ${subject}`);
-        // Handle personal email
-    } else if (labels.includes('CATEGORY_PROMOTIONS')) {
-        console.log(`Promotional email: ${subject}`);
-        // Handle promotional email
-    } else {
-        console.log(`Other email from ${from}: ${subject}`);
-        // Handle other types of email
-    }
-
-    // Add your AI processing and response sending logic here
-}
 async function manageNewEmail(userData) {
 
     console.log("inside manage new email");
@@ -154,17 +119,10 @@ async function manageNewEmail(userData) {
 
 
 
-            // if(latestProcessedHistoryId != null && newHistoryId <= latestProcessedHistoryId){
-            //     console.log("No new email to process");
-            //   return "No new email to process";
-            // }
-            // console.log("got greater history id")
-
-            // await userAccountController.updateHistoryIdByEmail(email , newHistoryId);
+           
 
             const refreshToken = await userAccountController.getRefreshTokenByEmail(email);
 
-            // const messageId = message.message.messageId;
             const accessToken = await userAccountController.getAccessToken(email);
 
 
@@ -173,11 +131,9 @@ async function manageNewEmail(userData) {
             console.log("histoty changes start");
 
             const historyChanges = await getHistoryChanges(authClient, newHistoryId, latestProcessedHistoryId , email);
-            // console.log("history changes ", JSON.stringify(historyChanges));
             console.log("history changes end");
 
 
-            // let allMessages = await retrieveThreadFromMessage(authClient , messageId);
             return historyChanges;
 
         } else {
@@ -191,68 +147,7 @@ async function manageNewEmail(userData) {
     }
 }
 
-async function retrieveThreadFromMessage(auth, messageId) {
-    try {
-        console.log('notification got for message id ;- ', messageId);
 
-        const gmail = google.gmail({ version: 'v1', auth });
-
-        // Step 1: Get the latest unread message
-        console.log('Fetching latest unread message...');
-        const response = await gmail.users.messages.list({
-            userId: 'me',
-            q: 'is:unread',
-            maxResults: 1,
-        });
-
-        if (!response.data.messages || response.data.messages.length === 0) {
-            console.log('No unread messages found.');
-            return null;
-        }
-
-        const latestMessageId = response.data.messages[0].id;
-        console.log(`Latest unread message ID: ${latestMessageId}`);
-
-        // Step 2: Get the thread ID of the latest unread message
-        console.log('Fetching message details to get thread ID...');
-        const messageDetails = await gmail.users.messages.get({
-            userId: 'me',
-            id: latestMessageId,
-        });
-
-        // console.log('messageDetails' , messageDetails);
-
-        const threadId = messageDetails.data.threadId;
-        console.log(`Thread ID of the latest unread message: ${threadId}`);
-
-        // Step 3: Get the entire thread
-        console.log('Fetching the entire thread...');
-        const thread = await gmail.users.threads.get({
-            userId: 'me',
-            id: threadId,
-        });
-
-        console.log('Thread retrieved successfully');
-        // console.log(JSON.stringify(thread.data));
-        // return thread.data;
-        const messageDetails2 = extractMessageDetails(thread.data);
-        await removeUnreadLabel(auth, latestMessageId);
-        console.log('Extracted message details:', JSON.stringify(messageDetails2, null, 2));
-
-        let finalMessage = {
-            thread: messageDetails2,
-            originalMessage: messageDetails
-        };
-        return finalMessage;
-
-    } catch (error) {
-        console.error('Error retrieving latest unread thread:', error.message);
-        if (error.response) {
-            console.error('Error response:', error.response.data);
-        }
-        throw error;
-    }
-}
 
 async function removeUnreadLabel(auth, messageId) {
     const gmail = google.gmail({ version: 'v1', auth });

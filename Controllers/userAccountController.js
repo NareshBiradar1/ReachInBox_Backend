@@ -177,3 +177,54 @@ exports.deleteUserAccountByEmail = async (email) => {
         throw err;
     }
 }
+
+exports.checkUserAccountExixtsByEmail = async (email) => {
+    try {
+        const existingUserAccount = await userAccountModel.findOne({accountEmail: email});
+        if (existingUserAccount){
+            return {
+                success: true,
+                exists: true,
+                message: "The email you are trying to automate is already set up for automation under another account. If you believe this is an error, please contact support.",
+                userAccount: existingUserAccount
+            }
+        }
+        else return {
+            success: true,
+            exists: false,
+            userAccount: null
+        }
+    } catch (err) {
+        return {
+            success: false,
+            message: 'An error occurred',
+            error: err.message
+        }
+    }
+}
+
+exports.retrieveAllUserAccountsByUserId =  async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const retrievedUserAccounts = await userAccountModel.find({userId: userId});
+
+        // Return an array of objects containing only accountEmail and accountType
+        const filteredUserAccounts = retrievedUserAccounts.map((userAccount) => {
+            return {
+                accountEmail: userAccount.accountEmail,
+                accountType: userAccount.accountType
+            }
+        })
+        return res.status(200).json({
+            success: true,
+            message: 'User accounts retrieved successfully',
+            userAccounts: filteredUserAccounts
+        });
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve user accounts',
+            error: err.message
+        });
+    }
+}

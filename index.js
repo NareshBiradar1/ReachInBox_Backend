@@ -1,11 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+
 const gmailAuthRoutes = require('./Routes/gmailAuthRoutes');
 const gmailWatchRoute = require('./Routes/gmailWatchRoute');
-const {listenForMessages} = require('./Routes/gmailnewEmailManage');
 
-// const sendEmailWorker = require('./Task-Scheduler/sendEmailWorker');
 
 const {connectDB} = require('./Database/connectDB');
 require('dotenv').config();
